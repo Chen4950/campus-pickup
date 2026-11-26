@@ -1,0 +1,8 @@
+/.venv/
+/.npm-cache/
+/node_modules/
+/dist/
+/backend/runtime/
+__pycache__/
+*.py[cod]
+
