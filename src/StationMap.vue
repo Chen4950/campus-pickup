@@ -86,6 +86,7 @@ function paint() {
   for (let index = 0; index <= lastArrowSegment; index++) {
     const start = points[props.route[index]]
     const end = points[props.route[index + 1]]
+    if (!start || !end) continue
     if (Math.hypot(end[0] - start[0], end[1] - start[1]) < 32) continue
     const x = (start[0] + end[0]) / 2
     const y = (start[1] + end[1]) / 2
@@ -147,7 +148,7 @@ function paint() {
       ctx.fillStyle = '#fff'
       ctx.fill()
     }
-    if (!isShelf) {
+    if (!isShelf && node.type !== 'aisle') {
       ctx.font = `600 ${labelSize}px system-ui, sans-serif`
       ctx.fillStyle = '#4e6663'
       ctx.textAlign = 'center'

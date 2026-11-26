@@ -179,3 +179,42 @@ select { appearance: none; background-image: linear-gradient(45deg, transparent 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
 }
+
+.account-header { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+.account-actions, .pagination { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; }
+.account-actions { justify-content: flex-end; }
+.account-actions button { min-height: 40px; white-space: nowrap; }
+.account-name { max-width: 12ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sign-in { max-width: 480px; padding-top: clamp(30px, 10vh, 100px); }
+.account-form { margin-top: 16px; }
+.account-switch { margin-top: 14px; min-height: 40px; }
+.account-feedback { padding-top: 12px; padding-bottom: 0; }
+.password-panel { max-width: 480px; margin-left: auto; }
+.admin-shell, .scanner-shell { display: grid; gap: 15px; }
+.scanner-shell { max-width: 720px; }
+.admin-shell .page-heading, .scanner-shell .page-heading { margin-bottom: 0; }
+.admin-form { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; margin: 14px 0 8px; }
+.admin-form label { flex: 1 1 190px; }
+.admin-form.filters label { flex-basis: 135px; }
+.table-wrap { margin-top: 14px; overflow: auto; }
+.table-wrap table { width: 100%; border-collapse: collapse; text-align: left; }
+.table-wrap th, .table-wrap td { padding: 10px; border-bottom: 1px solid #dfe8e6; }
+.table-wrap th { background: #eef6f2; }
+.table-wrap td:first-child { min-width: 100px; overflow-wrap: anywhere; }
+.table-wrap button { white-space: nowrap; }
+.pagination { justify-content: flex-end; margin-top: 14px; }
+.button.danger { background: #fff5f3; color: #8d362a; border: 1px solid #e9c8c1; }
+.scan-form, .scan-result p, .scan-result .heading-actions { margin-top: 14px; }
+.scan-preview { display: block; width: 100%; max-height: 60vh; margin-top: 14px; border-radius: 8px; background: #16221e; }
+.scan-result h2 { overflow-wrap: anywhere; }
+
+@media (max-width: 740px) {
+  .account-header { grid-template-columns: minmax(0, 1fr) auto; }
+  .account-actions { gap: 4px 10px; }
+  .account-name { display: none; }
+  .account-header .navigation { flex-wrap: wrap; gap: 4px 18px; }
+  .account-header .navigation button { min-height: 44px; white-space: nowrap; }
+  .account-header .brand-secondary { display: none; }
+  .admin-form > .button { width: 100%; }
+  .scan-form { grid-template-columns: 1fr; }
+}

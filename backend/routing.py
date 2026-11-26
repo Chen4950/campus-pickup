@@ -20,8 +20,6 @@ class StationRoutes:
         if start not in self.shelves | {entry}:
             raise ValueError("请选择入口或当前所在的货架。")
         stops = list(dict.fromkeys(requested))
-        if len(stops) > MAX_STOPS:
-            raise ValueError(f"一次最多规划 {MAX_STOPS} 个不同取件点。")
         if unknown := sorted(set(stops) - self.shelves):
             raise ValueError(f"找不到货架：{'、'.join(unknown)}。")
         closed = set(closed)
@@ -40,10 +38,30 @@ class StationRoutes:
             if self._search(graph, start, verify, [shelf]) is None
         ]
         reachable = [shelf for shelf in stops if shelf not in unreachable]
-        best = self._search(graph, start, verify, reachable)
+        baseline = self._search(graph, start, verify, reachable, ordered=True)
+        if len(reachable) <= MAX_STOPS:
+            best = self._search(graph, start, verify, reachable)
+        else:
+            # Bound the search for large inventories by visiting the closest remaining shelf first.
+            ordered = []
+            remaining = set(reachable)
+            position = start
+            while remaining:
+                choices = []
+                for shelf in sorted(remaining):
+                    leg = self._search(graph, position, shelf, [])
+                    if leg:
+                        choices.append((leg[0], shelf))
+                if not choices:
+                    break
+                _, position = min(choices)
+                remaining.remove(position)
+                ordered.append(position)
+            best = None if remaining else self._search(graph, start, verify, ordered, ordered=True)
+            if baseline and (best is None or baseline[0] < best[0]):
+                best = baseline
         if best is None:
             raise ValueError("这些货架无法在同一条单向路线内全部取完，请减少本次取件点。")
-        baseline = self._search(graph, start, verify, reachable, ordered=True)
         steps = list(dict.fromkeys(node for node in best[1] if node in reachable))
         distance = best[0] + exit_path[0]
         baseline_distance = baseline[0] + exit_path[0] if baseline else None
@@ -86,7 +104,7 @@ class StationRoutes:
                     path.append(state[0])
                 return length, list(reversed(path))
             for neighbor, weight in graph[node]:
-                if target == gate and (neighbor == exit_node or (neighbor == gate and progress != complete)):
+                if source != gate and (neighbor == exit_node or (neighbor == gate and (target != gate or progress != complete))):
                     continue
                 next_state = (neighbor, visit(neighbor, progress))
                 new_distance = length + weight

@@ -1,13 +1,16 @@
 param(
     [switch]$Install,
-    [ValidateRange(1, 65535)][int]$Port = 8000
+    [ValidateRange(1, 65535)][int]$Port = 8000,
+    [switch]$Lan,
+    [string]$Certificate,
+    [string]$PrivateKey
 )
 
 $ErrorActionPreference = 'Stop'
 Push-Location -LiteralPath $PSScriptRoot
 try {
     if ($Install) {
-        if (-not (Test-Path -LiteralPath '.venv/Scripts/python.exe')) {
+        if (-not (Test-Path -LiteralPath '.venv/Scripts/pip.exe')) {
             python -m venv .venv
             if ($LASTEXITCODE) { throw '创建 Python 环境失败。' }
         }
@@ -21,7 +24,15 @@ try {
     }
     npm.cmd run build
     if ($LASTEXITCODE) { throw '前端构建失败。' }
-    & '.venv/Scripts/python.exe' -m uvicorn backend.app:app --host 127.0.0.1 --port $Port
+    if ([bool]$Certificate -ne [bool]$PrivateKey) {
+        throw '请同时提供 HTTPS 证书和私钥。'
+    }
+    $bindAddress = if ($Lan) { '0.0.0.0' } else { '127.0.0.1' }
+    $serverArgs = @('backend.app:app', '--host', $bindAddress, '--port', $Port)
+    if ($Certificate) {
+        $serverArgs += @('--ssl-certfile', $Certificate, '--ssl-keyfile', $PrivateKey)
+    }
+    & '.venv/Scripts/python.exe' -m uvicorn @serverArgs
 } finally {
     Pop-Location
 }

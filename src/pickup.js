@@ -1,15 +1,20 @@
-export const storageKey = 'campus-pickup-session-v1'
-
-export async function request(path, body, signal) {
+export async function request(path, body, signal, method = body === undefined ? 'GET' : 'POST') {
   const image = body instanceof Blob
   const response = await fetch(path, {
-    method: body === undefined ? 'GET' : 'POST',
+    method,
     headers: body === undefined ? undefined : { 'Content-Type': image ? body.type : 'application/json' },
     body: body === undefined || image ? body : JSON.stringify(body),
     signal,
   })
-  const data = await response.json()
-  if (!response.ok) throw new Error(typeof data.detail === 'string' ? data.detail : '输入格式有误，请核对后再试。')
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    const error = new Error(typeof data.detail === 'string' ? data.detail : '请求失败，请核对输入后重试。')
+    error.status = response.status
+    if (error.status === 401 && !['/api/auth/me', '/api/auth/login', '/api/auth/register'].includes(path)) {
+      window.dispatchEvent(new Event('pickup-session-expired'))
+    }
+    throw error
+  }
   return data
 }
 

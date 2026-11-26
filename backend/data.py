@@ -8,9 +8,13 @@ from pathlib import Path
 PROJECT = Path(__file__).resolve().parents[1]
 
 
+def database_path():
+    return Path(os.getenv("PICKUP_DB", PROJECT / "backend" / "runtime" / "station.sqlite3"))
+
+
 def load_station_data():
     source = Path(os.getenv("PICKUP_DEMO_DATA", PROJECT / "backend" / "data" / "demo.json"))
-    database = Path(os.getenv("PICKUP_DB", PROJECT / "backend" / "runtime" / "station.sqlite3"))
+    database = database_path()
     raw = source.read_bytes()
     fingerprint = hashlib.sha256(raw).hexdigest()
     sample = json.loads(raw)
