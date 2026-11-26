@@ -5,4 +5,12 @@
 /backend/runtime/
 __pycache__/
 *.py[cod]
+/mobile/android/.gradle/
+/mobile/android/**/build/
+/mobile/android/local.properties
+/mobile/harmony/.hvigor/
+/mobile/harmony/**/build/
+/mobile/harmony/**/oh_modules/
+/mobile/harmony/local.properties
+/mobile/**/.idea/
 

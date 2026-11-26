@@ -25,6 +25,8 @@ student01,A1-02-4513,A1,02,4513
 
 ## 手机使用
 
+原生客户端位于 [mobile](mobile/README.md)。Android 使用 Kotlin 和原生 View，鸿蒙使用 ArkTS 和 ArkUI。两端使用同一组取件、预测与扫码接口。
+
 在同一局域网内，使用 `./start.ps1 -Lan` 启动，手机浏览器打开电脑的局域网地址和服务端口。普通用户使用取件路线与错峰计划，管理员打开扫码取件，核对包裹后确认出库或丢弃。
 
 实时相机扫码需要手机信任的 HTTPS 证书。例如使用 `./start.ps1 -Lan -Certificate ./cert.pem -PrivateKey ./key.pem`，再以证书对应的 HTTPS 地址访问。未启用实时相机时，可拍照识别面单或手动输入包裹码。
